@@ -63,8 +63,8 @@ NutUp <- function (times, y, parm){
                    v = parm[3],
                    dx = grid,
                    AFDW = AFDW)
-  uptake <- parm[4]*Cs
-  input <- parm[4]*parm[1]
+  uptake <- parm[4] * Cs
+  input <- parm[4] * parm[1]
   dCs <- trans$dC - uptake + input
   list(c(dCs))
 }
@@ -130,14 +130,14 @@ NutUpTSMM <- function (times, y, parm){
   list(c(dCs, dCts))
 }
 
-BTCTSMM <- function(parm){
-  parm.Cl <- c(parm[1],parm[3],parm[4],0,parm[5],parm[6],0)
-  parm.N <- c(parm[2],parm[3],parm[4],parm[7],parm[5],parm[6],parm[8])
-  yini.Cl <- c(parm.Cl[1],rep(Cl.ini,initial.length),rep(parm.Cl[1],(199-initial.length)), rep(parm.Cl[1],200))
-  yini.N <- c(parm.N[1],rep(N.ini,initial.length),rep(parm.N[1],(199-initial.length)), rep(parm.N[1],200))
-  Cl.conc <- ode.1D(func = NutUpTSMM,y = yini.Cl, parms = parm.Cl, times = time, nspec = 2)[,2*distance]
-  N.conc <- ode.1D(func = NutUpTSMM,y = yini.N, parms = parm.N, times = time, nspec = 2)[,2*distance]
-  return(c(Cl.conc,N.conc))
+BTCTSMM <- function(parm) {
+  parm.Cl <- c(parm[1], parm[3], parm[4], 0, parm[5], parm[6], 0)
+  parm.N <- c(parm[2], parm[3], parm[4], parm[7], parm[5], parm[6], parm[8])
+  yini.Cl <- c(parm.Cl[1], rep(Cl.ini, initial.length), rep(parm.Cl[1], (199 - initial.length)), rep(parm.Cl[1], 200))
+  yini.N <- c(parm.N[1], rep(N.ini, initial.length), rep(parm.N[1], (199 - initial.length)), rep(parm.N[1], 200))
+  Cl.conc <- ode.1D(func = NutUpTSMM, y = yini.Cl, parms = parm.Cl, times = time, nspec = 2)[, 2 * distance]
+  N.conc <- ode.1D(func = NutUpTSMM, y = yini.N, parms = parm.N, times = time, nspec = 2)[, 2 * distance]
+  return(c(Cl.conc, N.conc))
 }
 
 ResidualTSMM <- function(parm){

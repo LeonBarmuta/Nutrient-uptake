@@ -1,4 +1,4 @@
-# function code from 'Fite experimenta data.r'
+# function code from 'Fit experimental data.r'
 
 if (!require(ReacTran)) install.packages('ReacTran')
 library(ReacTran)
@@ -12,14 +12,19 @@ NutUpTS <- function (times, y, parm){
   require(ReacTran)
   Cs <- y[1:200]
   Cts <- y[201:400]
-  AFDW <- fiadeiro(v = parm[3], D = parm[2], grid = grid)
-  trans <- tran.1D(C = Cs,
-                   C.up = parm[1],
-                   C.down = parm[1],
-                   D = parm[2],
-                   v = parm[3],
-                   dx = grid,
-                   AFDW = AFDW)
+  # Advective Finite Difference Weights
+  AFDW <- fiadeiro(v = parm[3], # advective velocity
+                   D = parm[2], # diffusion coefficient
+                   grid = grid) # discretization grid
+  # Estimate rate of change of concentration due to diffusion and advection
+  trans <- tran.1D(C = Cs, # concentration, defined at centre of each grid cell
+                   C.up = parm[1], # conc at upstream boundary
+                   C.down = parm[1], # conc at downstream boundary
+                   D = parm[2], # diffusion coefficient
+                   v = parm[3], # advective velocity
+                   dx = grid, # thickness of grid cells
+                   AFDW = AFDW # advective finite difference weights
+                   )
   ts.exchange <- parm[5] * (Cs-Cts)
   uptake <- parm[4] * Cs
   input <- parm[4] * parm[1]
@@ -31,18 +36,18 @@ NutUpTS <- function (times, y, parm){
 BTCTS <- function(parm){
   # Fit Cl and N together, assuming same residual variance
   # require(deSolve)
-  parm.Cl <- c(parm[1],parm[3],parm[4],0,parm[5],parm[6])
-  parm.N <- c(parm[2],parm[3],parm[4],parm[7],parm[5],parm[6])
-  yini.Cl <- c(parm.Cl[1],rep(Cl.ini,initial.length),
-               rep(parm.Cl[1],(199-initial.length)),
-               rep(parm.Cl[1],200))
-  yini.N <- c(parm.N[1],rep(N.ini,initial.length),
-              rep(parm.N[1],(199-initial.length)),
-              rep(parm.N[1],200))
-  Cl.conc <- ode.1D(func = NutUpTS,y = yini.Cl,
-                    parms = parm.Cl, times = time, nspec = 2)[,2*distance]
-  N.conc <- ode.1D(func = NutUpTS,y = yini.N,
-                   parms = parm.N, times = time, nspec = 2)[,2*distance]
+  parm.Cl <- c(parm[1], parm[3], parm[4], 0, parm[5], parm[6])
+  parm.N <- c(parm[2], parm[3], parm[4], parm[7], parm[5], parm[6])
+  yini.Cl <- c(parm.Cl[1], rep(Cl.ini, initial.length),
+               rep(parm.Cl[1], (199-initial.length)),
+               rep(parm.Cl[1], 200))
+  yini.N <- c(parm.N[1], rep(N.ini, initial.length),
+              rep(parm.N[1], (199-initial.length)),
+              rep(parm.N[1], 200))
+  Cl.conc <- ode.1D(func = NutUpTS, y = yini.Cl,
+                    parms = parm.Cl,  times = time,  nspec = 2)[, 2*distance]
+  N.conc <- ode.1D(func = NutUpTS, y = yini.N,
+                   parms = parm.N, times = time, nspec =                                                              2)[,2*distance]
   return(c(Cl.conc,N.conc))
 }
 
@@ -56,7 +61,7 @@ ResidualTS <- function(parm){
 NutUp <- function (times, y, parm){
   #  Advection-dispersion with first order uptake in main channel
   Cs <- y
-  AFDW <- fiadeiro(v = parm[3],D = parm[2],grid = grid)
+  AFDW <- fiadeiro(v = parm[3], D = parm[2], grid = grid)
   trans <- tran.1D(C = Cs, C.up = parm[1],
                    C.down = parm[1],
                    D = parm[2],
